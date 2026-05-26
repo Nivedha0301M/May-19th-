@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Bank Exam Quiz</title>
+
+<style>
+
+body{
+    font-family: Arial, sans-serif;
+    background:#f4f6f9;
+    margin:0;
+    padding:20px;
+}
+
+.container{
+    max-width:1000px;
+    margin:auto;
+}
+
+h1{
+    text-align:center;
+}
+
+/* ========================= */
+/* TIMER AREA */
+/* ========================= */
+
+#timer-container{
+    position:sticky;
+    top:0;
+    z-index:100;
+    background:#f4f6f9;
+    padding-bottom:10px;
+}
+
+#timer{
+    background:#222;
+    color:white;
+    padding:15px;
+    text-align:center;
+    font-size:22px;
+    border-radius:10px;
+    margin-bottom:10px;
+}
+
+.timer-buttons{
+    text-align:center;
+}
+
+#pauseBtn,
+#resumeBtn{
+    padding:10px 20px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:16px;
+    margin:5px;
+}
+
+#pauseBtn{
+    background:#ff9800;
+    color:white;
+}
+
+#resumeBtn{
+    background:#28a745;
+    color:white;
+}
+
+.question{
+    background:white;
+    padding:20px;
+    margin-bottom:20px;
+    border-radius:12px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+.question h3{
+    margin-bottom:15px;
+}
+
+.option{
+    display:block;
+    padding:12px;
+    margin:10px 0;
+    border:1px solid #ccc;
+    border-radius:8px;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.option:hover{
+    background:#f0f0f0;
+}
+
+.selected{
+    background:#cfe2ff;
+    border:2px solid #0d6efd;
+}
+
+.mark-btn{
+    margin-top:10px;
+    padding:8px 15px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    background:#ff9800;
+    color:white;
+}
+
+.marked{
+    background:#ffcc80 !important;
+}
+
+.review-marked{
+    background:#e0e0e0 !important;
+    border:2px solid #9e9e9e;
+}
+
+.clear-btn{
+    margin-top:10px;
+    margin-left:10px;
+    padding:8px 15px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    background:#dc3545;
+    color:white;
+}
+
+.submit-btn{
+    width:100%;
+    padding:15px;
+    font-size:20px;
+    border:none;
+    border-radius:10px;
+    background:#28a745;
+    color:white;
+    cursor:pointer;
+    margin-top:20px;
+}
+
+.result-box{
+    background:white;
+    padding:30px;
+    border-radius:12px;
+    text-align:center;
+    box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+.review-btn{
+    padding:12px 20px;
+    margin-top:20px;
+    border:none;
+    border-radius:10px;
+    background:#007bff;
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+}
+
+.review-question{
+    background:white;
+    padding:20px;
+    margin:20px 0;
+    border-radius:12px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+.correct{
+    color:green;
+    font-weight:bold;
+}
+
+.wrong{
+    color:red;
+    font-weight:bold;
+}
+
+.unanswered{
+    color:orange;
+    font-weight:bold;
+}
+
+.correct-answer{
+    background:#d4edda;
+    padding:10px;
+    border-radius:8px;
+    margin-top:10px;
+}
+
+.disabled-option{
+    pointer-events:none;
+    opacity:0.6;
+}
+
+.disabled-btn{
+    opacity:0.6;
+    cursor:not-allowed;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Bank Exam MCQ Quiz</h1>
+
+<!-- ========================= -->
+<!-- TIMER -->
+<!-- ========================= -->
+
+<div id="timer-container">
+
+    <div id="timer">
+        Time Left: 20:00
+    </div>
+
+    <div class="timer-buttons">
+
+        <button id="pauseBtn" onclick="pauseTimer()">
+            Pause
+        </button>
+
+        <button id="resumeBtn" onclick="resumeTimer()" disabled>
+            Resume
+        </button>
+
+    </div>
+
+</div>
+
+<div id="quiz"></div>
+
+<button class="submit-btn" onclick="submitQuiz()">
+Submit Quiz
+</button>
+
+</div>
+
+<script>
+
+// ===============================
+// QUESTIONS AREA
+// ===============================
+
+const questions = [
+
+{q:"During the official visit of External Affairs Minister (EAM) Dr. S. Jaishankar to the Caribbean region from May 2–10, 2026, which of the following Memorandum of Understanding (MoU) areas was signed with Jamaica under the leadership of Prime Minister Andrew Holness to strengthen bilateral cooperation between India and Jamaica?", options:["Renewable energy, digital banking and marine security","Health cooperation, solarisation and broadcasting","Defence logistics, cyber security and tourism promotion","Pharmaceuticals, fintech and artificial intelligence"], answer:1},
+
+{q:"While co-chairing the 9th Joint Commission Meeting in Paramaribo during his official visit to Suriname, Dr. S. Jaishankar met which Foreign Minister (FM) of Suriname?", options:["Chan Santokhi","Krishna Mathoera","Melvin Bouva","Albert Ramdin"], answer:2},
+
+{q:"During the bilateral meeting between External Affairs Minister Dr. S. Jaishankar and Prime Minister Kamla Persad-Bissessar in Port of Spain, Trinidad & Tobago (T&T), how many Memorandums of Understanding (MoUs) were signed covering a wide range of bilateral cooperation?", options:["5","6","8","10"], answer:2},
+
+{q:"Union Minister Jyotiraditya M. Scindia participated in the 51st Statehood Day celebrations of Sikkim in Gangtok. Which mission aimed at promoting sustainable agriculture and organic farming practices in the state was launched during the event?", options:["Mission Natural Farming Sikkim","Sikkim Organic Valley Mission","Mission Himalayan Agriculture","Mission Sikkim Organics"], answer:3},
+
+{q:"The “Mission Sikkim Organics” launched during Sikkim Statehood Day celebrations was announced with an outlay of:", options:["Rs. 240 crore","Rs. 300 crore","Rs. 360 crore","Rs. 420 crore"], answer:2},
+
+{q:"The Pension Fund Regulatory and Development Authority (PFRDA) introduced a new post-retirement framework under the National Pension System (NPS). What was the primary objective of this newly introduced retirement scheme?", options:["Mandatory pension for all private employees","Providing subscribers greater flexibility in periodic payouts after retirement","Converting pension corpus entirely into government securities","Replacing annuity-based pension structures completely"], answer:1},
+
+{q:"Under the revised retirement framework introduced by the Pension Fund Regulatory and Development Authority (PFRDA), subscribers of the National Pension System (NPS) can withdraw up to what percentage of their corpus tax-free at retirement?", options:["40%","50%","60%","75%"], answer:2},
+
+{q:"Earlier provisions under the National Pension System (NPS) required retirees to use at least what percentage of their accumulated corpus to purchase an annuity?", options:["25%","30%","40%","50%"], answer:2},
+
+{q:"India’s first Small and Medium Enterprise (SME)-focused Semiconductor ATMP/OSAT facility inaugurated in Bhiwadi, Rajasthan operates under which expansion of the semiconductor manufacturing ecosystem?", options:["Wafer Fabrication and Silicon Assembly Unit","Assembly, Testing, Marking and Packaging / Outsourced Semiconductor Assembly and Test","Integrated Nano Chip Manufacturing and Processing Facility","Advanced Electronic Wafer Bonding and Packaging Unit"], answer:1},
+
+{q:"The SME-led semiconductor ATMP/OSAT facility inaugurated in Rajasthan was launched under the leadership of which Union Minister associated with the Ministry of Electronics and Information Technology (MeitY)?", options:["Rajeev Chandrasekhar","Piyush Goyal","Ashwini Vaishnaw","Dharmendra Pradhan"], answer:2},
+
+{q:"In Rajasthan, the Electronics Manufacturing Cluster (EMC) inaugurated at Salarpur, Khushkhera in Bhiwadi was developed over approximately how much land area?", options:["40.2 acres","50.3 acres","65.8 acres","72.5 acres"], answer:1},
+
+{q:"The Electronics Manufacturing Cluster (EMC) project inaugurated in Rajasthan involved an investment close to:", options:["Rs. 75 crore","Rs. 100 crore","Rs. 150 crore","Rs. 250 crore"], answer:2},
+
+{q:"How much financial assistance was provided by the Government of India (GoI) under the Electronics Manufacturing Cluster (EMC) scheme for the Bhiwadi electronics manufacturing project in Rajasthan?", options:["Rs. 10.24 crore","Rs. 15.50 crore","Rs. 20.24 crore","Rs. 25.75 crore"], answer:2}	,
+
+{q:"Bhopal introduced India’s first solar-powered “Algae Tree” to combat urban air pollution. At which location in Madhya Pradesh (MP) was this innovative installation developed?", options:["Van Vihar National Park","Swami Vivekananda Park","Shaurya Smarak Campus","BHEL Environmental Complex"], answer:1},
+
+{q:"The solar-powered “Algae Tree” introduced in Bhopal works mainly by using microalgae suspended in liquid tanks to absorb which gas from the atmosphere?", options:["Nitrogen","Sulphur dioxide","Carbon dioxide","Methane"], answer:2},
+
+{q:"The parliamentary Committee on Empowerment of Women for the year 2026–27 was constituted by Lok Sabha Speaker Om Birla under which constitutional arrangement?", options:["It remains permanent for five years","It functions under Rajya Sabha Secretariat only","It is reconstituted every year and does not exceed one year in duration","It is chaired exclusively by the Leader of Opposition"], answer:2},
+
+{q:"The Committee on Empowerment of Women constituted for 2026–27 consists of 30 members, including how many members nominated by the Speaker of Lok Sabha?", options:["15","20","25","30"], answer:1},
+
+{q:"Which among the following Lok Sabha members was included in the Committee on Empowerment of Women for 2026–27 constituted by Speaker Om Birla?", options:["Hema Malini","Sudha Murty","PT Usha","Swati Maliwal"], answer:0},
+
+{q:"“Project Saksham”, launched by the National Highways Authority of India (NHAI) in collaboration with Vertis Foundation, primarily focuses on empowering which section of society?", options:["Urban unemployed youth","Women from rural areas","Senior citizens in semi-urban regions","Tribal artisans from North-East India"], answer:1},
+
+{q:"Under “Project Saksham”, training is being imparted through how many centres across India to strengthen employability and skill development?", options:["8","10","12","15"], answer:2},
+
+{q:"According to details related to NHAI’s “Project Saksham”, approximately how many youth have already benefited from the initiative?", options:["2,500","4,000","6,500","8,000"], answer:1},
+
+{q:"Prime Minister Narendra Modi’s visit to the United Arab Emirates (UAE) on May 15, 2026 formed part of a broader multi-nation diplomatic tour covering how many countries?", options:["Three nations","Four nations","Five nations","Six nations"], answer:2},
+
+{q:"Which organisations were part of the tripartite agreement signed during Prime Minister Narendra Modi’s UAE visit to strengthen cooperation in maritime and shipbuilding sectors?", options:["CSL, DDW and Centre of Excellence in Maritime & Shipbuilding (CEMS)","ISPRL, ADNOC and DDW","GoI, ADNOC and CEMS","CSL, ISPRL and Abu Dhabi Ports"], answer:0},
+
+{q:"Cochin Shipyard Limited (CSL) signed a Memorandum of Understanding (MoU) with which UAE-based maritime infrastructure company during PM Narendra Modi’s UAE visit?", options:["Nakheel Ports","DP World UAE","Drydocks World (DDW)","Emirates Marine Logistics"], answer:2},
+
+{q:"Assam Chief Minister Himanta Biswa Sarma inaugurated India’s first Artificial Intelligence (AI)-powered ‘phygital’ bank branch in Guwahati. Which financial institution launched this branch?", options:["AU Small Finance Bank","Ujjivan Small Finance Bank","Slice Small Finance Bank","Jana Small Finance Bank"], answer:2},
+
+{q:"The AI-powered ‘phygital’ bank branch inaugurated in Guwahati combines digital services with which traditional banking approach?", options:["Cryptocurrency-based banking","Fully virtual banking model","Physical branch banking services","Blockchain-driven credit system"], answer:2},
+
+{q:"Kami Rita Sherpa and Lhakpa Sherpa created history related to Mount Everest expeditions in 2026. Kami Rita Sherpa is popularly known by which title?", options:["Ice Warrior of Himalayas","Everest Man","Himalayan Pioneer","Sherpa King"], answer:1},
+
+{q:"Lhakpa Sherpa, who broke her own Mount Everest climbing record, is popularly referred to as:", options:["Queen of Annapurna","Himalayan Iron Lady","Everest Queen","Mountain Empress"], answer:2},
+
+{q:"Kami Rita Sherpa first climbed Mount Everest in which year before setting multiple climbing records later?", options:["1988","1990","1994","1998"], answer:2},
+
+{q:"Actor Ishaan Khatter received honorary membership of the 45 Cavalry Regiment of the Indian Armoured Corps for portraying which character in the film “Pippa”?", options:["Captain Vikram Batra","Major Somnath Sharma","Captain Balram Mehta","Lieutenant Arun Khetarpal"], answer:2},
+
+{q:"The film “Pippa”, for which actor Ishaan Khatter was honoured by the 45 Cavalry Regiment, was directed by:", options:["Meghna Gulzar","Shoojit Sircar","Raja Krishna Menon","Kabir Khan"], answer:2},
+
+{q:"Ali Faiq Ghalib al-Zaidi was sworn in as the youngest Prime Minister (PM) in Iraq’s modern history at the age of:", options:["38 years","40 years","42 years","45 years"], answer:1},
+
+{q:"The Coordination Framework that nominated Ali Faiq Ghalib al-Zaidi as Iraq’s Prime Minister belongs primarily to which country’s political environment?", options:["Iran","Iraq","Syria","Jordan"], answer:1},
+
+{q:"Prudential announced its plan to acquire a 75% stake in Bharti Life Insurance for an amount estimated at around:", options:["Rs. 2,400 crore","Rs. 3,500 crore","Rs. 4,800 crore","Rs. 5,600 crore"], answer:1},
+
+{q:"Approximately how much was the acquisition value in US dollar terms for Prudential’s proposed stake purchase in Bharti Life Insurance?", options:["USD 220 million","USD 389 million","USD 560 million","USD 800 million"], answer:1},
+
+{q:"Emirates NBD received approval to increase its stake in RBL Bank up to what percentage through an open offer and stake acquisition process?", options:["49%","60%","74%","76%"], answer:2},
+
+{q:"The proposed investment by Emirates NBD into RBL Bank was estimated at approximately:", options:["USD 1 billion","USD 2 billion","USD 3 billion","USD 5 billion"], answer:2},
+
+{q:"Which of the following correctly matches the establishment years of the concerned institutions involved in the Emirates NBD–RBL Bank development?", options:["RBL Bank – 1950; Emirates NBD – 2010","RBL Bank – 1943; Emirates NBD – 2007","RBL Bank – 1935; Emirates NBD – 2005","RBL Bank – 1948; Emirates NBD – 2008"], answer:1},
+
+{q:"The Asian Weightlifting Championships (AWC) 2026 were hosted at the Mahatma Mandir Convention & Exhibition Centre located in which Indian city?", options:["Ahmedabad","Gandhinagar","Surat","Vadodara"], answer:1},
+
+{q:"In the Asian Weightlifting Championships (AWC) 2026 medal tally, which country finished at the top position with 41 medals?", options:["India","Kazakhstan","China","South Korea"], answer:2},
+
+{q:"India finished at which position in the overall medal tally during the Asian Weightlifting Championships (AWC) 2026?", options:["First","Second","Third","Fourth"], answer:3},
+
+{q:"Indian weightlifter Gyanshree Yadav won a medal in which category during the Asian Weightlifting Championships (AWC) 2026?", options:["Women’s 49 kg silver medal","Women’s 53 kg silver medal","Women’s 59 kg bronze medal","Women’s 64 kg gold medal"], answer:1},
+
+{q:"Endangered Species Day (ESD) is observed annually on which day according to the 2026 observance mentioned in the report?", options:["First Monday of May","Second Thursday of May","Third Friday of May","Last Saturday of May"], answer:2},
+
+{q:"The 2026 theme of Endangered Species Day (ESD) focused on which of the following themes?", options:["Conserving Biodiversity Through Green Innovation","Wildlife Restoration and Planet Protection","Celebrating America’s Wildlife Comeback Stories: Championing the Endangered Species Act","Saving Species Through Community Participation"], answer:2},
+
+{q:"Endangered Species Day was first observed in which year?", options:["2005","2008","2010","2013"], answer:3},
+
+{q:"International Day of Light (IDL) is observed every year on May 16 to highlight the importance of which field?", options:["Renewable energy storage technologies","Space communication systems","Light-based technologies","Quantum computing applications"], answer:2},
+
+{q:"International Day of Light (IDL) commemorates the successful operation of the first laser by Theodore Maiman in which year?", options:["1958","1960","1962","1965"], answer:1},
+
+{q:"The 2026 theme of International Day of Light (IDL) was:", options:["Advancing Innovation through Optics","Light and Human Progress","Light for a Sustainable Future","Lasers for Global Development"], answer:2},
+
+{q:"National Dengue Day is observed in India on May 16 with the primary objective of strengthening awareness and prevention measures before which seasonal period?", options:["Winter epidemic phase","Summer heatwave period","Monsoon withdrawal period","Pre-monsoon season"], answer:3},
+
+{q:"The 2026 theme of National Dengue Day highlighted community participation through which slogan?", options:["Stop Dengue Through Public Hygiene","Community Participation for Dengue Control: Check, Clean and Cover","Fight Mosquitoes, Save Lives","Dengue-Free India Through Awareness and Vaccination"], answer:1}
+
+];
+
+// ===============================
+// VARIABLES
+// ===============================
+
+let userAnswers = new Array(questions.length).fill(null);
+
+let markedForReview = new Array(questions.length).fill(false);
+
+let submitted = false;
+
+// ===============================
+// LOAD QUIZ
+// ===============================
+
+function loadQuiz(){
+
+    const quizDiv = document.getElementById("quiz");
+
+    questions.forEach((question,index)=>{
+
+        const qDiv = document.createElement("div");
+
+        qDiv.classList.add("question");
+
+        qDiv.id = `question_${index}`;
+
+        qDiv.innerHTML = `
+        <h3>Q${index+1}. ${question.q}</h3>
+        `;
+
+        question.options.forEach((option,optIndex)=>{
+
+            const opt = document.createElement("div");
+
+            opt.classList.add("option");
+
+            opt.innerText = option;
+
+            opt.onclick = ()=>selectOption(index,optIndex,opt);
+
+            opt.id = `q${index}_opt${optIndex}`;
+
+            qDiv.appendChild(opt);
+
+        });
+
+        // MARK BUTTON
+
+        const markBtn = document.createElement("button");
+
+        markBtn.innerText = "Mark For Review";
+
+        markBtn.classList.add("mark-btn");
+
+        markBtn.onclick = ()=>toggleMark(index,markBtn);
+
+        qDiv.appendChild(markBtn);
+
+        // CLEAR BUTTON
+
+        const clearBtn = document.createElement("button");
+
+        clearBtn.innerText = "Clear";
+
+        clearBtn.classList.add("clear-btn");
+
+        clearBtn.onclick = ()=>clearAnswer(index);
+
+        qDiv.appendChild(clearBtn);
+
+        quizDiv.appendChild(qDiv);
+
+    });
+
+}
+
+// ===============================
+// SELECT OPTION
+// ===============================
+
+function selectOption(qIndex,optIndex,element){
+
+    if(submitted) return;
+
+    userAnswers[qIndex] = optIndex;
+
+    const options = document.querySelectorAll(`[id^="q${qIndex}_opt"]`);
+
+    options.forEach(opt=>{
+        opt.classList.remove("selected");
+    });
+
+    element.classList.add("selected");
+
+}
+
+// ===============================
+// MARK FOR REVIEW
+// ===============================
+
+function toggleMark(index,button){
+
+    markedForReview[index] = !markedForReview[index];
+
+    const questionBox = document.getElementById(`question_${index}`);
+
+    if(markedForReview[index]){
+
+        button.classList.add("marked");
+
+        button.innerText = "Marked For Review";
+
+        questionBox.classList.add("review-marked");
+
+    }else{
+
+        button.classList.remove("marked");
+
+        button.innerText = "Mark For Review";
+
+        questionBox.classList.remove("review-marked");
+
+    }
+
+}
+
+// ===============================
+// CLEAR ANSWER
+// ===============================
+
+function clearAnswer(index){
+
+    if(submitted) return;
+
+    userAnswers[index] = null;
+
+    const options = document.querySelectorAll(`[id^="q${index}_opt"]`);
+
+    options.forEach(opt=>{
+        opt.classList.remove("selected");
+    });
+
+}
+
+// ===============================
+// SUBMIT QUIZ
+// ===============================
+
+function submitQuiz(){
+
+    if(submitted) return;
+
+    submitted = true;
+
+    clearInterval(timer);
+
+    let score = 0;
+
+    let correctCount = 0;
+    let wrongCount = 0;
+    let unansweredCount = 0;
+
+    questions.forEach((question,index)=>{
+
+        const userAns = userAnswers[index];
+
+        if(userAns === null){
+
+            unansweredCount++;
+
+        }
+        else if(userAns === question.answer){
+
+            score += 1;
+            correctCount++;
+
+        }
+        else{
+
+            score -= 0.25;
+            wrongCount++;
+
+        }
+
+    });
+
+    let attempted = correctCount + wrongCount;
+
+    let accuracy = attempted > 0
+    ? ((correctCount/attempted)*100).toFixed(2)
+    : 0;
+
+    document.body.innerHTML = `
+
+    <div class="container">
+
+        <div class="result-box">
+
+            <h1>Quiz Submitted ✅</h1>
+
+            <h2>Total Score: ${score.toFixed(2)}</h2>
+
+            <h3>Correct Answers: ${correctCount}</h3>
+
+            <h3>Wrong Answers: ${wrongCount}</h3>
+
+            <h3>Unanswered Questions: ${unansweredCount}</h3>
+
+            <h3>Accuracy: ${accuracy}%</h3>
+
+            <button class="review-btn" onclick="reviewAnswers()">
+            Review Answers
+            </button>
+
+            <div id="reviewSection"></div>
+
+        </div>
+
+    </div>
+
+    `;
+
+}
+
+// ===============================
+// REVIEW ANSWERS
+// ===============================
+
+function reviewAnswers(){
+
+    const reviewSection = document.getElementById("reviewSection");
+
+    let html = `<h1 style="margin-top:40px;">Review Section</h1>`;
+
+    questions.forEach((question,index)=>{
+
+        const userAns = userAnswers[index];
+
+        let status = "";
+        let marks = "";
+
+        if(userAns === null){
+
+            status = `<span class="unanswered">Unanswered</span>`;
+            marks = `0 Marks`;
+
+        }
+        else if(userAns === question.answer){
+
+            status = `<span class="correct">Correct ✅</span>`;
+            marks = `+1 Mark`;
+
+        }
+        else{
+
+            status = `<span class="wrong">Wrong ❌</span>`;
+            marks = `-0.25 Mark`;
+
+        }
+
+        html += `
+
+        <div class="review-question">
+
+            <h3>Q${index+1}. ${question.q}</h3>
+
+            <p>${status}</p>
+
+            <p><b>Marks:</b> ${marks}</p>
+
+            <p>
+            <b>Your Answer:</b>
+            ${
+                userAns === null
+                ? "Not Attempted"
+                : question.options[userAns]
+            }
+            </p>
+
+            <div class="correct-answer">
+            <b>Correct Answer:</b>
+            ${question.options[question.answer]}
+            </div>
+
+        </div>
+
+        `;
+
+    });
+
+    reviewSection.innerHTML = html;
+
+}
+
+// ===============================
+// TIMER
+// ===============================
+
+let time = 1200;
+
+let timer;
+
+let isPaused = false;
+
+function startTimer(){
+
+    timer = setInterval(()=>{
+
+        if(!isPaused){
+
+            let minutes = Math.floor(time/60);
+
+            let seconds = time%60;
+
+            document.getElementById("timer").innerText =
+            `Time Left: ${minutes}:${seconds < 10 ? '0'+seconds : seconds}`;
+
+            time--;
+
+            if(time < 0){
+
+                clearInterval(timer);
+
+                alert("Time is up! Quiz auto-submitted.");
+
+                submitQuiz();
+
+            }
+
+        }
+
+    },1000);
+
+}
+
+// ===============================
+// PAUSE TIMER
+// ===============================
+
+function pauseTimer(){
+
+    if(submitted) return;
+
+    isPaused = true;
+
+    document.getElementById("pauseBtn").disabled = true;
+
+    document.getElementById("resumeBtn").disabled = false;
+
+    // Disable options
+    document.querySelectorAll(".option").forEach(opt=>{
+        opt.classList.add("disabled-option");
+    });
+
+    // Disable buttons
+    document.querySelectorAll(".mark-btn, .clear-btn").forEach(btn=>{
+        btn.disabled = true;
+        btn.classList.add("disabled-btn");
+    });
+
+}
+// ===============================
+// RESUME TIMER
+// ===============================
+
+function resumeTimer(){
+
+    if(submitted) return;
+
+    isPaused = false;
+
+    document.getElementById("pauseBtn").disabled = false;
+
+    document.getElementById("resumeBtn").disabled = true;
+
+    // Enable options
+    document.querySelectorAll(".option").forEach(opt=>{
+        opt.classList.remove("disabled-option");
+    });
+
+    // Enable buttons
+    document.querySelectorAll(".mark-btn, .clear-btn").forEach(btn=>{
+        btn.disabled = false;
+        btn.classList.remove("disabled-btn");
+    });
+
+}
+// ===============================
+
+loadQuiz();
+
+startTimer();
+
+</script>
+
+</body>
+</html>
